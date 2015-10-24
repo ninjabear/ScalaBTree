@@ -1,4 +1,4 @@
-import model.{Node, Tree}
+import model.Tree
 
 /**
  * ScalaBTree / Ed 
@@ -7,10 +7,12 @@ import model.{Node, Tree}
 object Main {
 
   def main(args: Array[String]) {
-    val tree = Tree(Some(Node("a", None, None)))
-    tree.insert("b")
-    tree.insert("c")
-    tree.inOrder()
+    val tree = Tree(1)
+    tree.add(2)
+    tree.add(3)
+    tree.add(99)
+    tree.add(31)
+    tree.inOrder.foreach( x => println(x) )
   }
 
 }

@@ -1,5 +1,7 @@
 package model
 
+import scala.collection.mutable.ListBuffer
+
 /**
  * ScalaBTree / Ed 
  * 24/10/2015 16:26
@@ -8,44 +10,65 @@ case class Node[T <% Ordered[T]](var data: T, var left: Option[Node[T]], var rig
   override def toString = data.toString
 }
 
-case class Tree[T <% Ordered[T]](var root: Option[Node[T]]) {
+case class Tree[T <% Ordered[T]](rootItem: T) {
 
-  def insert(item: T): Unit = {
+  private var root: Option[Node[T]] = None
 
-    if (!root.isDefined) {
-      root = Some(Node(item, None, None))
-      return
+  def add(item: T): Unit = {
+
+    if (root.isEmpty) {
+      root = Some(Node(rootItem, None, None))
     }
 
     var cur = root
-    while (cur.isDefined)
-      {
-        val toCheck = cur.get
-        val res = toCheck.data.compare(item)
+    while (cur.isDefined) {
 
-        if (res==0)
-          return
-        else if (res < 0){
-          if (toCheck.left.isEmpty) { toCheck.left = Some( Node(item, None, None) ); return }
-          else { cur = toCheck.left }
-        } else {
-          if (toCheck.right.isEmpty) { toCheck.right = Some( Node(item, None, None) ); return }
-          else { cur = toCheck.right }
+      val toCheck = cur.get
+      val res = toCheck.data.compare(item)
+
+      if (res == 0)
+        return
+      else if (res < 0) {
+
+        if (toCheck.left.isEmpty) {
+          toCheck.left = Some(Node(item, None, None)); return
         }
+        else {
+          cur = toCheck.left
+        }
+
+      } else {
+
+        if (toCheck.right.isEmpty) {
+          toCheck.right = Some(Node(item, None, None)); return
+        }
+        else {
+          cur = toCheck.right
+        }
+
       }
+    }
 
   }
 
+  private def inOrder(node: Node[T], order: ListBuffer[Node[T]]): ListBuffer[Node[T]] = {
 
-  def inOrder(node: Node[T]): Unit ={
-    if (node.left.isDefined) { inOrder(node.left.get) }
-    println(node)
-    if (node.right.isDefined) { inOrder(node.right.get) }
+    if (node.left.isDefined) {
+      inOrder(node.left.get, order)
+    }
+
+    order += node
+
+    if (node.right.isDefined) {
+      inOrder(node.right.get, order)
+    }
+
+    order
   }
 
 
-  def inOrder() {
-    inOrder(root.get)
+  def inOrder(): List[Node[T]] = {
+    inOrder(root.get, ListBuffer()).toList
   }
 
 }
